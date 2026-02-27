@@ -1,39 +1,33 @@
 package ui
 
 import (
+	"lxsavage/lxtxt/internal/common"
 	"lxsavage/lxtxt/internal/statusbar"
 
 	"charm.land/lipgloss/v2"
 )
 
 var (
-	blue   = lipgloss.Blue
-	green  = lipgloss.Green
-	purple = lipgloss.Magenta
-	white  = lipgloss.Color("#ffffff")
-)
-
-var (
 	StyleSegmentNormalMode = statusbar.StyleDefaultSegment.
-				Background(blue).
-				Foreground(white)
+				Background(common.Blue).
+				Foreground(common.White)
 
 	StyleSegmentCommandMode = statusbar.StyleDefaultSegment.
-				Background(purple).
-				Foreground(white)
+				Background(common.Purple).
+				Foreground(common.White)
 
 	StyleSegmentInsertMode = statusbar.StyleDefaultSegment.
-				Background(green).
-				Foreground(white)
+				Background(common.Green).
+				Foreground(common.White)
 
 	StyleCursorNormal = lipgloss.NewStyle().
-				Background(blue)
+				Background(common.Blue)
 
 	StyleCursorInsert = lipgloss.NewStyle().
-				Background(green)
+				Background(common.Green)
 
 	StyleLineNumber = lipgloss.NewStyle().
-			Foreground(green).
+			Foreground(common.Green).
 			Padding(0, 1).
 			Align(lipgloss.Right)
 )

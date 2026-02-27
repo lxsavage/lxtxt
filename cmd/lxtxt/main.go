@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"lxsavage/lxtxt/internal/fileio"
@@ -8,12 +9,22 @@ import (
 	"os"
 )
 
+const Version = "v0.1.0"
+
 func main() {
-	if len(os.Args) < 2 {
+	showVersion := flag.Bool("version", false, "gets the version of LXTXT")
+	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(Version)
+		os.Exit(0)
+	}
+
+	if len(flag.Args()) < 1 {
 		fmt.Println("specify a file to open")
 	}
 
-	path := os.Args[1]
+	path := flag.Arg(0)
 	buf := []string{""}
 	if fbuf, err := fileio.LoadFileBuf(path); err == nil {
 		buf = fbuf

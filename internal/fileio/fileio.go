@@ -1,3 +1,4 @@
+// fileio contains a few abstractions around loading/writing file data
 package fileio
 
 import (

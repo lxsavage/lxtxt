@@ -1,3 +1,4 @@
+// ui implements the main UI for LXTXT
 package ui
 
 import (

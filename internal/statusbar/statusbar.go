@@ -1,3 +1,4 @@
+// statusbar implements a declarative vim.airline-like status bar built on lipgloss
 package statusbar
 
 import (
@@ -159,7 +160,7 @@ func (s *Model) View() string {
 		}
 	}
 
-	res := lbarStr + leftBg + cbarStr + rightBg + rbarStr
+	res := lbarStr + leftBg + cbarStr + rightBg + rbarStr + "\n"
 	s.cache = res
 	return res
 }

@@ -2,6 +2,7 @@ package command
 
 import (
 	"errors"
+	"lxsavage/lxtxt/internal/common"
 	"regexp"
 	"strings"
 
@@ -37,18 +38,17 @@ func parse(cmd string) (string, []string, error) {
 	return action, args, nil
 }
 
-func Eval(cmd string) (tea.Cmd, error) {
-	return nil, nil
+func Eval(state common.StateUI, cmd string) (tea.Cmd, error) {
 	// TODO - implement
-	// cmd, args, err := parse(cmd)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	cmd, args, err := parse(cmd)
+	if err != nil {
+		return nil, err
+	}
 
-	// exec, ok := commandMap[strings.ToLower(cmd)]
-	// if !ok {
-	// 	return nil, ErrInvalidCommand
-	// }
+	exec, ok := commandMap[strings.ToLower(cmd)]
+	if !ok {
+		return nil, ErrInvalidCommand
+	}
 
-	// return exec(args)
+	return exec(args)
 }

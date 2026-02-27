@@ -25,3 +25,7 @@ func echo(args []string) (tea.Cmd, error) {
 	res := strings.Join(args, " ")
 	return PrintCmdWithMessage(res), nil
 }
+
+func _invalidCmd(args []string) (tea.Cmd, error) {
+	return PrintCmdWithMessage("Invalid command"), nil
+}
