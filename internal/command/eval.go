@@ -39,7 +39,6 @@ func parse(cmd string) (string, []string, error) {
 }
 
 func Eval(state common.StateUI, cmd string) (tea.Cmd, error) {
-	// TODO - implement
 	cmd, args, err := parse(cmd)
 	if err != nil {
 		return nil, err
@@ -50,5 +49,10 @@ func Eval(state common.StateUI, cmd string) (tea.Cmd, error) {
 		return nil, ErrInvalidCommand
 	}
 
-	return exec(args)
+	teaCmd, err := exec(state, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return teaCmd, nil
 }

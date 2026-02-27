@@ -6,5 +6,6 @@ var (
 	Blue   = lipgloss.Blue
 	Green  = lipgloss.Green
 	Purple = lipgloss.Magenta
+	Black  = lipgloss.Black
 	White  = lipgloss.Color("#ffffff")
 )

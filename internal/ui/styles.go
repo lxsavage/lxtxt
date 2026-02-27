@@ -8,26 +8,19 @@ import (
 )
 
 var (
-	StyleSegmentNormalMode = statusbar.StyleDefaultSegment.
+	styleSegmentNormalMode = statusbar.StyleDefaultSegment.
 				Background(common.Blue).
 				Foreground(common.White)
 
-	StyleSegmentCommandMode = statusbar.StyleDefaultSegment.
+	styleSegmentCommandMode = statusbar.StyleDefaultSegment.
 				Background(common.Purple).
 				Foreground(common.White)
 
-	StyleSegmentInsertMode = statusbar.StyleDefaultSegment.
+	styleSegmentInsertMode = statusbar.StyleDefaultSegment.
 				Background(common.Green).
 				Foreground(common.White)
 
-	StyleCursorNormal = lipgloss.NewStyle().
-				Background(common.Blue)
-
-	StyleCursorInsert = lipgloss.NewStyle().
-				Background(common.Green)
-
-	StyleLineNumber = lipgloss.NewStyle().
-			Foreground(common.Green).
-			Padding(0, 1).
-			Align(lipgloss.Right)
+	styleCursorCommand = lipgloss.NewStyle().
+				Background(common.White).
+				Foreground(common.Black)
 )

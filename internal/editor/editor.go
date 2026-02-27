@@ -21,7 +21,8 @@ type Model struct {
 
 func New(buf []string) Model {
 	return Model{
-		Buf: buf,
+		Buf:  buf,
+		Mode: common.MODE_NORMAL,
 	}
 }
 
@@ -34,13 +35,13 @@ func (m *Model) SetHeight(h int) {
 }
 
 func (m *Model) SetDimensions(w, h int) {
-	m.SetWidth(w)
-	m.SetHeight(h)
+	m.width = w
+	m.height = h
 }
 
 func (m Model) View() string {
 	gutterWidth := utilities.NumberWidth(len(m.Buf)) + 2
-	gutterStyle := StyleLineNumber.Width(gutterWidth)
+	gutterStyle := styleLineNumber.Width(gutterWidth)
 
 	var lines []string
 	endIdx := m.RScrollBase + m.height
@@ -56,9 +57,9 @@ func (m Model) View() string {
 		if m.Mode != common.MODE_COMMAND && m.CursorR == lineNum {
 			if m.CursorC >= len(line) {
 				if m.Mode == common.MODE_INSERT {
-					line += StyleCursorInsert.Render(" ")
+					line += styleCursorInsert.Render(" ")
 				} else {
-					line += StyleCursorNormal.Render(" ")
+					line += styleCursorNormal.Render(" ")
 				}
 			} else {
 				newLine := ""
@@ -67,9 +68,9 @@ func (m Model) View() string {
 				}
 
 				if m.Mode == common.MODE_INSERT {
-					newLine += StyleCursorInsert.Render(string(line[m.CursorC]))
+					newLine += styleCursorInsert.Render(string(line[m.CursorC]))
 				} else {
-					newLine += StyleCursorNormal.Render(string(line[m.CursorC]))
+					newLine += styleCursorNormal.Render(string(line[m.CursorC]))
 				}
 
 				if m.CursorC < len(line)-1 {

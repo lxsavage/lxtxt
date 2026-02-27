@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	StyleCursorNormal = lipgloss.NewStyle().
+	styleCursorNormal = lipgloss.NewStyle().
 				Background(common.Blue)
 
-	StyleCursorInsert = lipgloss.NewStyle().
+	styleCursorInsert = lipgloss.NewStyle().
 				Background(common.Green)
 
-	StyleLineNumber = lipgloss.NewStyle().
+	styleLineNumber = lipgloss.NewStyle().
 			Foreground(common.Green).
 			Padding(0, 1).
 			Align(lipgloss.Right)

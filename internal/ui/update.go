@@ -54,7 +54,7 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 		if m.dirty {
 			m = m.SaveFile()
 		}
-	case "q":
+	case "Q":
 		return m, tea.Quit
 	}
 	return m.computeFileStat(), nil

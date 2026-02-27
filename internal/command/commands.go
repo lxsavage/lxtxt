@@ -1,12 +1,13 @@
 package command
 
 import (
+	"lxsavage/lxtxt/internal/common"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
 )
 
-type command func(args []string) (tea.Cmd, error)
+type command func(state common.StateUI, args []string) (tea.Cmd, error)
 
 var commandMap = map[string]command{
 	"echo":  echo,
@@ -14,18 +15,18 @@ var commandMap = map[string]command{
 	"write": write,
 }
 
-func write(args []string) (tea.Cmd, error) {
+func write(state common.StateUI, args []string) (tea.Cmd, error) {
 	return tea.Batch(
 		PrintCmdWithMessage("Writing output..."),
 		SaveCmd,
 	), nil
 }
 
-func echo(args []string) (tea.Cmd, error) {
+func echo(state common.StateUI, args []string) (tea.Cmd, error) {
 	res := strings.Join(args, " ")
 	return PrintCmdWithMessage(res), nil
 }
 
-func _invalidCmd(args []string) (tea.Cmd, error) {
+func _invalidCmd(state common.StateUI, args []string) (tea.Cmd, error) {
 	return PrintCmdWithMessage("Invalid command"), nil
 }

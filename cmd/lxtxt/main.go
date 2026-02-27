@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-const Version = "v0.1.0"
+const Version = "localbuild"
 
 func main() {
 	showVersion := flag.Bool("version", false, "gets the version of LXTXT")

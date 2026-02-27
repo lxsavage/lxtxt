@@ -21,15 +21,15 @@ const (
 var (
 	SegmentNormal = statusbar.Segment(common.MODE_NORMAL.String(),
 		statusbar.WithId(segmentModeId),
-		statusbar.WithStyle(StyleSegmentNormalMode),
+		statusbar.WithStyle(styleSegmentNormalMode),
 	)
 	SegmentInsert = statusbar.Segment(common.MODE_INSERT.String(),
 		statusbar.WithId(segmentModeId),
-		statusbar.WithStyle(StyleSegmentInsertMode),
+		statusbar.WithStyle(styleSegmentInsertMode),
 	)
 	SegmentCommand = statusbar.Segment(common.MODE_COMMAND.String(),
 		statusbar.WithId(segmentModeId),
-		statusbar.WithStyle(StyleSegmentCommandMode),
+		statusbar.WithStyle(styleSegmentCommandMode),
 	)
 	SegmentIsNotDirty = statusbar.Segment("",
 		statusbar.WithId(segmentDirty),
@@ -141,7 +141,7 @@ func (m Model) View() tea.View {
 	if emptyLineCount > 0 {
 		v.WriteString(strings.Repeat("\n", emptyLineCount))
 		if m.Mode == common.MODE_COMMAND {
-			fmt.Fprintf(&v, ":%s%s\n", m.command, StyleCursorNormal.Render(" "))
+			fmt.Fprintf(&v, ":%s%s\n", m.command, styleCursorCommand.Render(" "))
 		} else {
 			if len(m.CommandMessage) > m.width {
 				v.WriteString(m.CommandMessage[:m.width-3])
