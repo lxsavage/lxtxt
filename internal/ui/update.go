@@ -27,37 +27,38 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 		m.editor.CursorLineStart()
 		m.editor.Newline(0)
 		m.editor.CursorUp()
-		m = m.changeMode(common.MODE_INSERT)
+		m.changeMode(common.MODE_INSERT)
 	case "o":
 		m.editor.CursorLineEnd()
 		m.editor.Newline(utilities.IndentLevel(m.editor.Buf[m.editor.CursorR]))
-		m = m.changeMode(common.MODE_INSERT)
+		m.changeMode(common.MODE_INSERT)
 	case "a":
 		m.editor.CursorRight()
-		m = m.changeMode(common.MODE_INSERT)
+		m.changeMode(common.MODE_INSERT)
 	case "i":
-		m = m.changeMode(common.MODE_INSERT)
+		m.changeMode(common.MODE_INSERT)
 	// case ":":
-	// 	m = m.changeMode(common.MODE_COMMAND)
+	// m.changeMode(common.MODE_COMMAND)
 	case "!":
 		if m.dirty {
 			m.editor.Buf = append([]string(nil), m.origBuf...)
 			m.editor.CursorR, m.editor.CursorC = 0, 0
 
-			m = m.setDirty(false)
+			m.setDirty(false)
 		}
 	case "D":
 		if m.editor.Deleteline() {
-			m = m.setDirty(true)
+			m.setDirty(true)
 		}
 	case "W":
 		if m.dirty {
-			m = m.SaveFile()
+			m.SaveFile()
 		}
 	case "Q":
 		return m, tea.Quit
 	}
-	return m.computeFileStat(), nil
+	m.computeFileStat()
+	return m, nil
 }
 
 func (m Model) updateCommand(msg tea.KeyMsg) (Model, tea.Cmd) {
@@ -73,8 +74,8 @@ func (m Model) updateCommand(msg tea.KeyMsg) (Model, tea.Cmd) {
 			m.CommandMessage = fmt.Sprintf("command error: %v", err)
 			cmd = nil
 		}
-
-		return m.changeMode(common.MODE_NORMAL), cmd
+		m.changeMode(common.MODE_NORMAL)
+		return m, cmd
 	default:
 		if t := msg.Key().Text; t != "" {
 			m.command += t
@@ -87,16 +88,16 @@ func (m Model) updateInsert(msg tea.KeyMsg) (Model, tea.Cmd) {
 	switch msg.String() {
 	case "backspace":
 		if m.editor.Backspace() {
-			m = m.setDirty(true)
+			m.setDirty(true)
 		}
 	case "enter":
 		if m.editor.Newline(utilities.IndentLevel(m.editor.Buf[m.editor.CursorR])) {
-			m = m.setDirty(true)
+			m.setDirty(true)
 		}
 	default:
 		if t := msg.Key().Text; t != "" {
 			if m.editor.InsertText(t) {
-				m = m.setDirty(true)
+				m.setDirty(true)
 			}
 		}
 	}

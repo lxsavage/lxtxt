@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.0"
+
+      - name: Build lxtxt
+        shell: bash
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          mkdir -p dist
+          go build -v -ldflags "-s -w -X main.Version=$TAG" -o dist/lxtxt ./cmd/lxtxt
+
+      - name: Rename binary
+        shell: bash
+        run: |
+          OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
+          ARCH=$([[ "${{ runner.arch }}" == "X64" ]] && echo "amd64" || echo "arm64")
+          EXT=$([[ "${{ runner.os }}" == "Windows" ]] && echo ".exe" || echo "")
+          mv dist/lxtxt "dist/lxtxt-${OS}-${ARCH}${EXT}"
+
+      # One single release, created/upgraded by every matrix job
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/lxtxt-*
+          generate_release_notes: true

@@ -55,7 +55,6 @@ type Model struct {
 }
 
 func newModel(path string, buf []string) Model {
-
 	m := Model{
 		Mode:    common.MODE_NORMAL,
 		Path:    path,
@@ -94,8 +93,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 
 		m.status.SetWidth(m.width)
+
 		// TODO - find a non-hacky way of setting up the editor height
-		m.editor.SetDimensions(msg.Width, msg.Height-2)
+		m.editor.SetDimensions(msg.Width, msg.Height-1)
 	case tea.KeyMsg:
 		if m.Mode == common.MODE_NORMAL || m.Mode == common.MODE_INSERT {
 			switch msg.String() {
@@ -111,7 +111,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		switch msg.String() {
 		case "esc":
-			m = m.changeMode(common.MODE_NORMAL)
+			m.changeMode(common.MODE_NORMAL)
 		}
 
 		switch m.Mode {
@@ -128,7 +128,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.CommandMessage = msg.Value
 	}
 
-	return m.computeFileStat(), nil
+	m.computeFileStat()
+	return m, nil
 }
 
 func (m Model) View() tea.View {

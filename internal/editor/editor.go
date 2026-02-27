@@ -82,5 +82,11 @@ func (m Model) View() string {
 		fmt.Fprintf(&view, "%s%s\n", gutterStyle.Render(strconv.Itoa(lineNum+1)), line)
 	}
 
-	return view.String()
+	vs := view.String()
+	emptyLineCount := m.height - strings.Count(vs, "\n") - 1
+	if emptyLineCount > 0 {
+		return vs + styleEmptyLine.Render(strings.Repeat("~\n", emptyLineCount))
+	}
+
+	return vs
 }

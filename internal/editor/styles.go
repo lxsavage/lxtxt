@@ -14,7 +14,10 @@ var (
 				Background(common.Green)
 
 	styleLineNumber = lipgloss.NewStyle().
-			Foreground(common.Green).
+			Foreground(common.Gray).
 			Padding(0, 1).
 			Align(lipgloss.Right)
+
+	styleEmptyLine = lipgloss.NewStyle().
+			Foreground(common.Disabled)
 )

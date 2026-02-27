@@ -1,6 +1,6 @@
 # LXTXT
 
-A modal editor written in Go and inspired by VIM.
+A modal text editor written in Go and inspired by VIM.
 
 ## Installation
 
@@ -42,16 +42,14 @@ into other modes:
 
 ####  `INSERT`
 
-This is the mode entered after typing `i` in `NORMAL` mode. It is primarily for
-directly modifying text. Typing text in this mode will insert it where the
-cursor currently sits, and arrow keys can still be used to move around here
-similar to `NORMAL` mode.
+`INSERT` is primarily for directly modifying text. Typing text in this mode will
+insert it where the cursor currently sits, and arrow keys can still be used to
+move around here similar to `NORMAL` mode.
 
 #### `COMMAND`
 
 > [!IMPORTANT]
 > This mode is currently not implemented but will be before the 1.0.0 release.
 
-This is the mode entered when typing `:` in `NORMAL` mode. You can type textual
-commands here to perform actions that are not normally possible in `NORMAL`
-mode.
+`COMMAND` is for typing textual commands with arguments to perform actions that
+are not possible in `NORMAL` mode.

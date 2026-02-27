@@ -7,7 +7,7 @@ import (
 	"lxsavage/lxtxt/internal/statusbar"
 )
 
-func (m Model) SaveFile() Model {
+func (m *Model) SaveFile() {
 	if newBuf, err := fileio.WriteFile(m.Path, m.editor.Buf); err == nil {
 		m.editor.Buf = newBuf
 		if m.editor.CursorR > len(m.editor.Buf) {
@@ -15,21 +15,19 @@ func (m Model) SaveFile() Model {
 			m.editor.CursorUp()
 		}
 
-		m = m.setDirty(false)
+		m.setDirty(false)
 	}
-	return m
 }
 
-func (m Model) computeFileStat() Model {
+func (m *Model) computeFileStat() {
 	msg := fmt.Sprintf("%d:%d", m.editor.CursorR+1, m.editor.CursorC+1)
 
 	m.status.AddSegmentOptionsById(segmentNavStatId,
 		statusbar.WithText(msg),
 	)
-	return m
 }
 
-func (m Model) setDirty(d bool) Model {
+func (m *Model) setDirty(d bool) {
 	m.dirty = d
 
 	if m.dirty {
@@ -37,11 +35,9 @@ func (m Model) setDirty(d bool) Model {
 	} else {
 		m.status.SetSegmentById(segmentDirty, SegmentIsNotDirty)
 	}
-
-	return m
 }
 
-func (m Model) changeMode(em common.EditorMode) Model {
+func (m *Model) changeMode(em common.EditorMode) {
 	m.Mode = em
 	m.editor.Mode = em
 	m.command = ""
@@ -54,6 +50,4 @@ func (m Model) changeMode(em common.EditorMode) Model {
 	case common.MODE_INSERT:
 		m.status.SetSegmentById(segmentModeId, SegmentInsert)
 	}
-
-	return m
 }

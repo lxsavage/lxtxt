@@ -1,0 +1,42 @@
+name: build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.0"
+
+      - name: Build lxtxt
+        shell: bash
+        run: |
+          VERSION="build-${GITHUB_RUN_NUMBER}-${GITHUB_SHA::7}"
+          mkdir -p dist
+          go build -v -ldflags "-s -w -X main.Version=$VERSION" -o dist/lxtxt ./cmd/lxtxt
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Add .exe extension to build artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: mv dist/lxtxt dist/lxtxt.exe
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lxtxt-${{ runner.os }}-${{ runner.arch }}
+          path: dist/lxtxt${{ runner.os == 'Windows' && '.exe' || '' }}
