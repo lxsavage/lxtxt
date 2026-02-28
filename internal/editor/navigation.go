@@ -7,8 +7,8 @@ func (m *Model) CursorUp() bool {
 		return false
 	}
 
-	if m.RScrollBase > 0 && m.CursorR == m.RScrollBase {
-		m.RScrollBase--
+	if m.ScrollBaseR > 0 && m.CursorR == m.ScrollBaseR {
+		m.ScrollBaseR--
 	}
 
 	m.CursorR--
@@ -25,12 +25,16 @@ func (m *Model) CursorDown() bool {
 	}
 
 	m.CursorR++
-	if m.CursorR >= m.RScrollBase+m.height {
-		m.RScrollBase++
+	if m.CursorR >= m.ScrollBaseR+m.height {
+		m.ScrollBaseR++
 	}
 
 	if m.CursorC > len(m.Buf[m.CursorR])-1 {
 		m.CursorC = len(m.Buf[m.CursorR])
+
+		if m.CursorC < m.ScrollBaseC {
+			m.ScrollBaseC = m.CursorC
+		}
 	}
 	return true
 }
@@ -40,6 +44,10 @@ func (m *Model) CursorLeft() bool {
 		return false
 	}
 	m.CursorC--
+
+	if m.CursorC < m.ScrollBaseC {
+		m.ScrollBaseC = m.CursorC
+	}
 	return true
 }
 
@@ -48,16 +56,26 @@ func (m *Model) CursorRight() bool {
 		return false
 	}
 	m.CursorC++
+
+	ew := m.EditorWidth()
+	if m.CursorC >= m.ScrollBaseC+ew {
+		m.ScrollBaseC = m.CursorC - ew + 1
+	}
+
 	return true
 }
 
 func (m *Model) CursorLineStart() bool {
 	m.CursorC = 0
+	m.ScrollBaseC = 0
 	return true
 }
 
 func (m *Model) CursorLineEnd() bool {
 	m.CursorC = len(m.Buf[m.CursorR])
+
+	// 1 accounts for the space after the last char
+	m.ScrollBaseC = m.CursorC - m.EditorWidth() + 1
 	return true
 }
 

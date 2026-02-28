@@ -13,7 +13,8 @@ type Model struct {
 	Buf         []string
 	CursorR     int
 	CursorC     int
-	RScrollBase int
+	ScrollBaseR int
+	ScrollBaseC int
 	Mode        common.EditorMode
 	width       int
 	height      int
@@ -44,37 +45,44 @@ func (m Model) View() string {
 	gutterStyle := styleLineNumber.Width(gutterWidth)
 
 	var lines []string
-	endIdx := m.RScrollBase + m.height
+	endIdx := m.ScrollBaseR + m.height
 	if endIdx >= len(m.Buf) {
-		lines = m.Buf[m.RScrollBase:]
+		lines = m.Buf[m.ScrollBaseR:]
 	} else {
-		lines = m.Buf[m.RScrollBase : m.RScrollBase+m.height]
+		lines = m.Buf[m.ScrollBaseR : m.ScrollBaseR+m.height]
 	}
 
 	var view strings.Builder
 	for i, line := range lines {
-		lineNum := i + m.RScrollBase
+		if len(line) < m.ScrollBaseC {
+			line = ""
+		} else if m.ScrollBaseC > 0 {
+			line = line[m.ScrollBaseC:]
+		}
+		relativeCursorC := m.CursorC - m.ScrollBaseC
+
+		lineNum := i + m.ScrollBaseR
 		if m.Mode != common.MODE_COMMAND && m.CursorR == lineNum {
-			if m.CursorC >= len(line) {
+			if relativeCursorC >= len(line) {
 				if m.Mode == common.MODE_INSERT {
 					line += styleCursorInsert.Render(" ")
 				} else {
 					line += styleCursorNormal.Render(" ")
 				}
-			} else {
+			} else if relativeCursorC >= 0 {
 				newLine := ""
 				if m.CursorC > 0 {
-					newLine += line[:m.CursorC]
+					newLine += line[:relativeCursorC]
 				}
 
 				if m.Mode == common.MODE_INSERT {
-					newLine += styleCursorInsert.Render(string(line[m.CursorC]))
+					newLine += styleCursorInsert.Render(string(line[relativeCursorC]))
 				} else {
-					newLine += styleCursorNormal.Render(string(line[m.CursorC]))
+					newLine += styleCursorNormal.Render(string(line[relativeCursorC]))
 				}
 
-				if m.CursorC < len(line)-1 {
-					newLine += line[m.CursorC+1:]
+				if relativeCursorC < len(line)-1 {
+					newLine += line[relativeCursorC+1:]
 				}
 				line = newLine
 			}

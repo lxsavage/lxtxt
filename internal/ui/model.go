@@ -138,20 +138,22 @@ func (m Model) View() tea.View {
 	v.WriteString(m.status.View())
 	v.WriteString(m.editor.View())
 
-	emptyLineCount := m.height - strings.Count(v.String(), "\n") - 1
-	if emptyLineCount > 0 {
-		v.WriteString(strings.Repeat("\n", emptyLineCount))
-		if m.Mode == common.MODE_COMMAND {
-			fmt.Fprintf(&v, ":%s%s\n", m.command, styleCursorCommand.Render(" "))
-		} else {
-			if len(m.CommandMessage) > m.width {
-				v.WriteString(m.CommandMessage[:m.width-3])
-				v.WriteString("...")
-			} else {
-				v.WriteString(m.CommandMessage)
-			}
-		}
-	}
+	fmt.Fprintf(&v, "%d", m.editor.CursorC)
+	// TODO - for command mode
+	// emptyLineCount := m.height - strings.Count(v.String(), "\n") - 1
+	// if emptyLineCount > 0 {
+	// 	v.WriteString(strings.Repeat("\n", emptyLineCount))
+	// 	if m.Mode == common.MODE_COMMAND {
+	// 		fmt.Fprintf(&v, ":%s%s\n", m.command, styleCursorCommand.Render(" "))
+	// 	} else {
+	// 		if len(m.CommandMessage) > m.width {
+	// 			v.WriteString(m.CommandMessage[:m.width-3])
+	// 			v.WriteString("...")
+	// 		} else {
+	// 			v.WriteString(m.CommandMessage)
+	// 		}
+	// 	}
+	// }
 
 	return tea.View{
 		AltScreen: true,
