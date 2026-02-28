@@ -20,8 +20,8 @@ type Model struct {
 	height      int
 }
 
-func New(buf []string) Model {
-	return Model{
+func New(buf []string) *Model {
+	return &Model{
 		Buf:  buf,
 		Mode: common.MODE_NORMAL,
 	}

@@ -10,19 +10,25 @@ import (
 )
 
 func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
+
 	switch msg.String() {
-	case "_", "0":
+	case "k":
+		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorUp)
+	case "j":
+		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorDown)
+	case "h":
+		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorLeft)
+	case "l":
+		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorRight)
+	case "D":
+		// TODO - evaluate if this should be repeatable
+		if m.editor.RepeatMotion(m.readNumBuf(), m.editor.Deleteline) {
+			m.setDirty(true)
+		}
+	case "_":
 		m.editor.CursorLineStart()
 	case "$":
 		m.editor.CursorLineEnd()
-	case "k":
-		m.editor.CursorUp()
-	case "j":
-		m.editor.CursorDown()
-	case "h":
-		m.editor.CursorLeft()
-	case "l":
-		m.editor.CursorRight()
 	case "O":
 		m.editor.CursorLineStart()
 		m.editor.Newline(0)
@@ -46,10 +52,6 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 
 			m.setDirty(false)
 		}
-	case "D":
-		if m.editor.Deleteline() {
-			m.setDirty(true)
-		}
 	case "W":
 		if m.dirty {
 			m.SaveFile()
@@ -57,6 +59,14 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 	case "Q":
 		return m, tea.Quit
 	}
+
+	keyCodeByte := msg.String()[0]
+	if keyCodeByte >= '0' && keyCodeByte <= '9' {
+		m.numBuf = append(m.numBuf, keyCodeByte)
+	} else {
+		m.numBuf = m.numBuf[:0]
+	}
+
 	m.computeFileStat()
 	return m, nil
 }

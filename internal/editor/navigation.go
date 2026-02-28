@@ -2,6 +2,19 @@ package editor
 
 import "strings"
 
+type Motion func() bool
+
+func (m *Model) RepeatMotion(repeat int, motion Motion) bool {
+	didAnything := false
+	for range repeat {
+		if !motion() {
+			break
+		}
+		didAnything = true
+	}
+	return didAnything
+}
+
 func (m *Model) CursorUp() bool {
 	if m.CursorR <= 0 {
 		return false

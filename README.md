@@ -31,6 +31,10 @@ directly typing them:
 - `W`: write the buffer to the file
 - `!`: discard changes and revert to initial state when opening file
 
+> [!NOTE]
+> In most actions, you can type a number before the action command character to
+> repeat that command multiple times!
+
 In addition to these commands, the following commands can be typed to switch
 into other modes:
 
@@ -38,7 +42,7 @@ into other modes:
 - `:`: **NOT YET IMPLEMENTED** enter `COMMAND` mode
 
 > [!NOTE]
-> You can return to `NORMAL` mode from any other mode by pressing `esc`
+> You can return to `NORMAL` mode from any other mode by pressing `esc`.
 
 ####  `INSERT`
 

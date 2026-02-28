@@ -5,6 +5,7 @@ import (
 	"lxsavage/lxtxt/internal/common"
 	"lxsavage/lxtxt/internal/fileio"
 	"lxsavage/lxtxt/internal/statusbar"
+	"strconv"
 )
 
 func (m *Model) SaveFile() {
@@ -17,6 +18,15 @@ func (m *Model) SaveFile() {
 
 		m.setDirty(false)
 	}
+}
+
+func (m Model) readNumBuf() int {
+	res, err := strconv.Atoi(string(m.numBuf))
+	if err != nil {
+		return 1
+	}
+
+	return res
 }
 
 func (m *Model) computeFileStat() {
