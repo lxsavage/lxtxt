@@ -1,6 +1,8 @@
 // utilities contains useful generalized mathematical helper functions
 package utilities
 
+import "os/exec"
+
 // NumberWidth determines how many digits wide n is
 func NumberWidth(n int) int {
 	w := 1
@@ -18,4 +20,9 @@ func IndentLevel(s string) int {
 	for ; c < len(s) && s[c] == ' '; c++ {
 	}
 	return c
+}
+
+func ShowMan() {
+	call := exec.Command("man", "lxtxt")
+	call.Run()
 }

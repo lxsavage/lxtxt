@@ -1,0 +1,97 @@
+.\" Manpage for lxtxt(1)
+.TH LXTXT 1 "2026-02-28" "lxtxt 1" "User Commands"
+.SH NAME
+lxtxt \- a modal text editor inspired by VIM, written in Go
+.SH SYNOPSIS
+.nf
+lxtxt <file>
+.fi
+
+.SH DESCRIPTION
+\fBLXTXT\fR is a small modal text editor (written in Go) inspired by the modal editing model of \fBVi\fR/\fBVim\fR.
+It is primarily used to edit plain text files.
+
+.SH MODES
+With \fBLXTXT\fR being a modal text editor, there are multiple editing modes each with their own purpose.
+Pressing \fBEsc\fR from any mode returns you to \fBNORMAL\fR mode.
+
+.TP
+\fBNORMAL\fR
+This is the default mode. Use navigation and control commands here. Commands are entered
+directly (single keystrokes or keys). You may also prefix many commands with a number
+to repeat the action multiple times (for example, \fB5j\fR moves down five lines).
+
+Common commands available in \fBNORMAL\fR mode:
+
+.TP
+\fBarrow keys / h j k l\fR
+Move the cursor one position in the indicated direction. Arrow keys and \fBh\fR\fBj\fR\fBk\fR\fBl\fR are supported.
+
+.TP
+\fB_\fR
+Move to the beginning of the current line.
+
+.TP
+\fB$\fR
+Move to the end of the current line.
+
+.TP
+\fBD\fR
+Delete the current line.
+
+.TP
+\fBQ\fR
+Quit the editor without saving changes.
+
+.TP
+\fBW\fR
+Write the buffer to the file (save).
+
+.TP
+\fB!\fR
+Discard changes and revert the buffer to the initial state when the file was opened.
+
+.TP
+\fBi\fR
+Enter \fBINSERT\fR mode.
+
+.TP
+\fBNote\fR
+In most actions you can type a number before the action to repeat that command multiple times.
+
+.TP
+\fBINSERT\fR
+Primarily used for inserting and editing text directly. Typing printable characters inserts them at the cursor location.
+Arrow keys are available to move while inserting.
+
+.SH USAGE NOTES
+.IP
+- Press \fBEsc\fR to return to \fBNORMAL\fR mode from any other mode.
+.IP
+- Command-repeat prefixes (numeric counts) are supported for many \fBNORMAL\fR commands.
+.IP
+- Some features described in help text (notably the \fBCOMMAND\fR mode and installation helpers)
+may be under development; consult the project's repository or changelog for updates.
+
+.SH EXIT STATUS
+The program follows conventional exit codes:
+.TP
+0
+Success (file saved or normal exit).
+.TP
+Non-zero
+An error occurred (for example, file could not be opened or written).
+
+.SH EXAMPLES
+.nf
+lxtxt /path/to/file.txt
+.fi
+
+.SH AUTHOR
+\fLXTXT\fR was created by Logan Savage, with significant usage of TUI libraries by Charm.
+
+.SH BUGS
+This is an early project and should not be relied on for mission-critical work. Refer to the project's issue tracker for known bugs.
+
+.PP
+For more information and the latest development status, check the project's source repository.

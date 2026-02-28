@@ -56,6 +56,10 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 		if m.dirty {
 			m.SaveFile()
 		}
+	case "?":
+		// NOTE - if install script has not been run, this won't do anything due to
+		// the manpage not being installed to the proper directory
+		utilities.ShowMan()
 	case "Q":
 		return m, tea.Quit
 	}
