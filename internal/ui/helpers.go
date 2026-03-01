@@ -9,7 +9,7 @@ import (
 )
 
 func (m *Model) saveFile() {
-	if newBuf, err := utilities.WriteFile(m.Path, m.Editor.Buf); err == nil {
+	if newBuf, err := utilities.WriteFile(m.path, m.Editor.Buf); err == nil {
 		m.Editor.Buf = newBuf
 		if m.Editor.CursorR > len(m.Editor.Buf) {
 			m.Editor.CursorR = len(m.Editor.Buf)
@@ -41,14 +41,21 @@ func (m *Model) setDirty(d bool) {
 	m.dirty = d
 
 	if m.dirty {
-		m.status.SetSegmentById(segmentDirty, SegmentIsDirty)
+		m.status.SetSegmentById(segmentDirtyId, SegmentIsDirty)
 	} else {
-		m.status.SetSegmentById(segmentDirty, SegmentIsNotDirty)
+		m.status.SetSegmentById(segmentDirtyId, SegmentIsNotDirty)
 	}
 }
 
+func (m *Model) setPath(path string) {
+	m.path = path
+	m.status.AddSegmentOptionsById(segmentPathId,
+		statusbar.WithText(path),
+	)
+}
+
 func (m *Model) changeMode(em common.EditorMode) {
-	m.Mode = em
+	m.mode = em
 	m.Editor.Mode = em
 	m.command = ""
 

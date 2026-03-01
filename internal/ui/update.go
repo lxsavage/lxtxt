@@ -82,9 +82,11 @@ func (m Model) updateCommand(msg tea.KeyMsg) (Model, tea.Cmd) {
 		}
 	case "enter":
 		state := m.Editor.ToState()
+		state.Path = m.path
+
 		cmd, err := command.Eval(state, m.command)
 		if err != nil {
-			m.CommandMessage = fmt.Sprintf("command error: %v", err)
+			m.commandMessage = fmt.Sprintf("command error: %v", err)
 			cmd = nil
 		}
 		m.changeMode(common.MODE_NORMAL)

@@ -30,15 +30,13 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(flag.Args()) < 1 {
-		fmt.Fprintf(os.Stderr, "File not specified; see --help for usage.\n")
-		os.Exit(1)
-	}
-
-	path := flag.Arg(0)
+	path := ""
 	buf := []string{""}
-	if fbuf, err := utilities.LoadFileBuf(path); err == nil {
-		buf = fbuf
+	if len(flag.Args()) > 0 {
+		path = flag.Arg(0)
+		if fbuf, err := utilities.LoadFileBuf(path); err == nil {
+			buf = fbuf
+		}
 	}
 
 	if err := ui.Exec(path, buf); err != nil {

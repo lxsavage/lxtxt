@@ -21,7 +21,7 @@ See the makefile for more commands.
 ## Usage
 
 ```sh
-lxtxt <filepath>
+lxtxt [filepath]
 ```
 
 ### Modes
@@ -71,4 +71,5 @@ commands by default:
 - `w`: save the buffer to the file
 - `q` or `q!`: quit the editor without saving
 - `wq`: save the buffer to the file and quit the editor
+- `saveas <path>`: set the write path and save the buffer to that location
 - `sed <regexp> <replaceTxt>`: find and replace using a regular expression

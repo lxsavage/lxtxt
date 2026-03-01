@@ -7,7 +7,9 @@ import (
 )
 
 type UpdateUIMsg common.EditorState
-type SaveMsg struct{}
+type SaveMsg struct {
+	Path string
+}
 
 type PrintMsg struct {
 	Value string

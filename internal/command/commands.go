@@ -3,7 +3,10 @@ package command
 import (
 	"errors"
 	"lxsavage/lxtxt/internal/common"
+	"lxsavage/lxtxt/internal/utilities"
+	"os"
 	"regexp"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -11,12 +14,13 @@ import (
 type command func(state common.EditorState, args []string) (tea.Cmd, error)
 
 var commandMap = map[string]command{
-	"w":   saveBuf,
-	"q":   quit,
-	"q!":  quit, // Kept due to being a Vim artifact
-	"wq":  saveBufAndQuit,
-	"sed": sub,
-	"_":   invalidCommand,
+	"w":      saveBuf,
+	"q":      quit,
+	"q!":     quit, // Kept due to being a Vim artifact
+	"wq":     saveBufAndQuit,
+	"saveas": saveAs,
+	"sed":    sub,
+	"_":      invalidCommand,
 }
 
 // For future use, adds commands to the table
@@ -33,9 +37,35 @@ func saveBuf(state common.EditorState, args []string) (tea.Cmd, error) {
 	return SaveCmd, nil
 }
 
+func saveAs(state common.EditorState, args []string) (tea.Cmd, error) {
+	if len(args) < 1 {
+		return nil, ErrInsufficientArguments
+	}
+
+	expandedPath := args[0]
+	if strings.Contains(expandedPath, "~/") {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return nil, err
+		}
+
+		expandedPath = strings.ReplaceAll(expandedPath, "~/", home+"/")
+	}
+
+	if !utilities.CreateOK(expandedPath) {
+		return nil, errors.New("invalid path: " + expandedPath)
+	}
+
+	state.Path = expandedPath
+	return tea.Batch(
+		UpdateUICmdWithState(state),
+		SaveCmd,
+	), nil
+}
+
 func sub(state common.EditorState, args []string) (tea.Cmd, error) {
 	if len(args) < 2 {
-		return nil, errors.New("insufficient arguments")
+		return nil, ErrInsufficientArguments
 	}
 
 	re, err := regexp.Compile(args[0])

@@ -6,6 +6,7 @@ type EditorState struct {
 	CursorC     int
 	ScrollBaseR int
 	ScrollBaseC int
+	Path        string
 
 	// Not modifiable by command
 

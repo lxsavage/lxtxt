@@ -10,7 +10,7 @@ import (
 )
 
 // tabSeq is what a tab is rendered as in the editor
-var tabSeq = strings.Repeat(" ", 4)
+const tabSeq = "    "
 
 type Model struct {
 	Buf         []string
@@ -28,14 +28,6 @@ func New(buf []string) *Model {
 		Buf:  buf,
 		Mode: common.MODE_NORMAL,
 	}
-}
-
-func (m *Model) SetWidth(w int) {
-	m.width = w
-}
-
-func (m *Model) SetHeight(h int) {
-	m.height = h
 }
 
 func (m *Model) SetDimensions(w, h int) {

@@ -15,7 +15,8 @@ import (
 const (
 	segmentModeId    = "s-mode"
 	segmentNavStatId = "s-stat"
-	segmentDirty     = "s-dirty"
+	segmentDirtyId   = "s-dirty"
+	segmentPathId    = "s-path"
 )
 
 var (
@@ -32,33 +33,33 @@ var (
 		statusbar.WithStyle(styleSegmentCommandMode),
 	)
 	SegmentIsNotDirty = statusbar.Segment("",
-		statusbar.WithId(segmentDirty),
+		statusbar.WithId(segmentDirtyId),
 		statusbar.WithStyle(statusbar.StyleDefaultStatusBar),
 	)
 	SegmentIsDirty = statusbar.Segment("| +",
-		statusbar.WithId(segmentDirty),
+		statusbar.WithId(segmentDirtyId),
 		statusbar.WithStyle(statusbar.StyleDefaultStatusBar),
 	)
 )
 
 type Model struct {
 	origBuf        []string
+	numBuf         []byte
+	path           string
+	command        string
+	commandMessage string
 	status         *statusbar.Model
-	Path           string
-	Mode           common.EditorMode
+	Editor         *editor.Model
+	mode           common.EditorMode
 	width          int
 	height         int
-	command        string
-	CommandMessage string
-	numBuf         []byte
-	Editor         *editor.Model
 	dirty          bool
 }
 
 func newModel(path string, buf []string) Model {
 	m := Model{
-		Mode:    common.MODE_NORMAL,
-		Path:    path,
+		mode:    common.MODE_NORMAL,
+		path:    path,
 		origBuf: append([]string(nil), buf...),
 		Editor:  editor.New(append([]string(nil), buf...)),
 	}
@@ -68,7 +69,8 @@ func newModel(path string, buf []string) Model {
 			statusbar.SegmentWithBase(SegmentNormal,
 				statusbar.WithId(segmentModeId),
 			),
-			statusbar.Segment(m.Path,
+			statusbar.Segment(m.path,
+				statusbar.WithId(segmentPathId),
 				statusbar.WithStyle(statusbar.StyleDefaultStatusBar.Padding(0, 1)),
 			),
 			SegmentIsNotDirty,
@@ -102,7 +104,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.changeMode(common.MODE_NORMAL)
 		}
 
-		if m.Mode == common.MODE_NORMAL || m.Mode == common.MODE_INSERT {
+		if m.mode == common.MODE_NORMAL || m.mode == common.MODE_INSERT {
 			switch msg.String() {
 			case "up":
 				m.Editor.CursorUp()
@@ -115,7 +117,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-		switch m.Mode {
+		switch m.mode {
 		case common.MODE_COMMAND:
 			return m.updateCommand(msg)
 		case common.MODE_INSERT:
@@ -126,11 +128,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateNormal(msg)
 		}
 	case command.PrintMsg:
-		m.CommandMessage = msg.Value
+		m.commandMessage = msg.Value
 	case command.SaveMsg:
-		m.saveFile()
+		if len(m.path) > 0 {
+			m.saveFile()
+		} else {
+			m.commandMessage = "no file specified; use :saveas <path> to save to a file."
+		}
 	case command.UpdateUIMsg:
 		m.Editor.ApplyStateUI(common.EditorState(msg))
+		m.setPath(msg.Path)
 		m.setDirty(true)
 	}
 
@@ -144,14 +151,14 @@ func (m Model) View() tea.View {
 	v.WriteString(m.status.View())
 	v.WriteString(m.Editor.View())
 
-	if m.Mode == common.MODE_COMMAND {
+	if m.mode == common.MODE_COMMAND {
 		fmt.Fprintf(&v, ":%s%s\n", m.command, styleCursorCommand.Render(" "))
 	} else if len(m.numBuf) > 0 {
 		for _, b := range m.numBuf {
 			v.WriteByte(b)
 		}
 	} else {
-		v.WriteString(m.CommandMessage)
+		v.WriteString(m.commandMessage)
 	}
 
 	return tea.View{

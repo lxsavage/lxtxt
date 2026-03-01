@@ -4,7 +4,7 @@
 lxtxt \- a modal text editor inspired by VIM, written in Go
 .SH SYNOPSIS
 .nf
-lxtxt <file>
+lxtxt [file]
 .fi
 
 .SH DESCRIPTION
@@ -81,6 +81,10 @@ Quit the editor.
 .TP
 \fBwq\fR
 Write the buffer to the file then quit.
+
+.TP
+\fBsaveas\fR <path>
+Set the write path and save the buffer to that location
 
 .TP
 \fBsed\fR <regexp> <replaceTxt>
