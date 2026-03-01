@@ -1,6 +1,2 @@
-// command is a currently-unimplemented command system supposed to mimic what is in Vim and related editors
+// command is the implementation of the command system for LXTXT
 package command
-
-func Init() {
-	// TODO - implement custom command loading at some point
-}

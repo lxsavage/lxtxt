@@ -16,8 +16,10 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "LXTXT Editor %s\n\n", Version)
 		fmt.Fprintf(os.Stderr,
-			"Usage: %s [arguments] <file>\tedit a specific file\n"+
-				"   or: %s [version|help]\n\n",
+			"Usage: %s [file]\tedit a specific file\n"+
+				"   or: %s\t\topen an empty buffer\n"+
+				"   or: %s [arguments]\n\n",
+			os.Args[0],
 			os.Args[0],
 			os.Args[0],
 		)
