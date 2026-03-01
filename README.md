@@ -2,6 +2,9 @@
 
 A modal text editor written in Go and inspired by VIM.
 
+[![build](https://github.com/lxsavage/lxtxt/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/lxsavage/lxtxt/actions/workflows/build.yml)
+![GitHub Release](https://img.shields.io/github/v/release/lxsavage/lxtxt)
+
 ## Installation
 
 Installation scripts are coming soon, but for now the project needs to manually
