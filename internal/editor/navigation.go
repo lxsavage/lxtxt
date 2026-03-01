@@ -1,6 +1,8 @@
 package editor
 
-import "strings"
+import (
+	"strings"
+)
 
 type Motion func() bool
 
@@ -15,20 +17,36 @@ func (m *Model) RepeatMotion(repeat int, motion Motion) bool {
 	return didAnything
 }
 
+func (m *Model) correctVerticalScrolling() {
+	eh := m.EditorHeight()
+	if m.ScrollBaseR > m.CursorR {
+		m.ScrollBaseR = m.CursorR
+	} else if m.ScrollBaseR+eh < m.CursorR {
+		m.ScrollBaseR = m.CursorR - eh
+	}
+}
+
+func (m *Model) correctHorizontalScrolling() {
+	ew := m.EditorWidth()
+	if m.ScrollBaseC > m.CursorC {
+		m.ScrollBaseC = m.CursorC
+	} else if m.ScrollBaseC+ew-1 < m.CursorC {
+		m.ScrollBaseC = m.CursorC - ew + 1
+	}
+}
+
 func (m *Model) CursorUp() bool {
 	if m.CursorR <= 0 {
 		return false
 	}
-
-	if m.ScrollBaseR > 0 && m.CursorR == m.ScrollBaseR {
-		m.ScrollBaseR--
-	}
-
 	m.CursorR--
+
 	if m.CursorC > len(m.Buf[m.CursorR])-1 {
 		m.CursorC = len(m.Buf[m.CursorR])
 	}
 
+	m.correctVerticalScrolling()
+	m.correctHorizontalScrolling()
 	return true
 }
 
@@ -36,19 +54,14 @@ func (m *Model) CursorDown() bool {
 	if m.CursorR >= len(m.Buf)-1 {
 		return false
 	}
-
 	m.CursorR++
-	if m.CursorR >= m.ScrollBaseR+m.height {
-		m.ScrollBaseR++
-	}
 
 	if m.CursorC > len(m.Buf[m.CursorR])-1 {
 		m.CursorC = len(m.Buf[m.CursorR])
-
-		if m.CursorC < m.ScrollBaseC {
-			m.ScrollBaseC = m.CursorC
-		}
 	}
+
+	m.correctVerticalScrolling()
+	m.correctHorizontalScrolling()
 	return true
 }
 
@@ -58,9 +71,7 @@ func (m *Model) CursorLeft() bool {
 	}
 	m.CursorC--
 
-	if m.CursorC < m.ScrollBaseC {
-		m.ScrollBaseC = m.CursorC
-	}
+	m.correctHorizontalScrolling()
 	return true
 }
 
@@ -70,11 +81,7 @@ func (m *Model) CursorRight() bool {
 	}
 	m.CursorC++
 
-	ew := m.EditorWidth()
-	if m.CursorC >= m.ScrollBaseC+ew {
-		m.ScrollBaseC = m.CursorC - ew + 1
-	}
-
+	m.correctHorizontalScrolling()
 	return true
 }
 
@@ -87,8 +94,7 @@ func (m *Model) CursorLineStart() bool {
 func (m *Model) CursorLineEnd() bool {
 	m.CursorC = len(m.Buf[m.CursorR])
 
-	// 1 accounts for the space after the last char
-	m.ScrollBaseC = m.CursorC - m.EditorWidth() + 1
+	m.correctHorizontalScrolling()
 	return true
 }
 
@@ -101,8 +107,11 @@ func (m *Model) Backspace() bool {
 		if m.CursorC < len(oldLine) {
 			newLine += oldLine[m.CursorC:]
 		}
+
 		m.Buf[m.CursorR] = newLine
 		m.CursorC--
+
+		m.correctHorizontalScrolling()
 		return true
 	} else if m.CursorR > 0 {
 		oldLine := m.Buf[m.CursorR]
@@ -112,9 +121,37 @@ func (m *Model) Backspace() bool {
 
 		newBuf[m.CursorR] += oldLine
 		m.Buf = newBuf
+
 		return true
 	}
 	return false
+}
+
+func (m *Model) Delete() bool {
+	if m.CursorC >= len(m.Buf[m.CursorR]) {
+		if m.CursorR >= len(m.Buf)-1 {
+			return false
+		}
+
+		nextLine := m.Buf[m.CursorR+1]
+
+		newBuf := append(m.Buf[:m.CursorR], m.Buf[m.CursorR]+nextLine)
+		if len(m.Buf) > m.CursorR+2 {
+			newBuf = append(newBuf, m.Buf[m.CursorR+2:]...)
+		}
+
+		m.Buf = newBuf
+	} else {
+		oldLine := m.Buf[m.CursorR]
+		newLine := oldLine[:m.CursorC]
+		if len(oldLine) > m.CursorR+1 {
+			newLine += oldLine[m.CursorC+1:]
+		}
+
+		m.Buf[m.CursorR] = newLine
+	}
+
+	return true
 }
 
 func (m *Model) Deleteline() bool {

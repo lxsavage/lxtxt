@@ -25,3 +25,8 @@ func (m Model) EditorWidth() int {
 	gutterWidth := utilities.NumberWidth(len(m.Buf)) + 2
 	return m.width - gutterWidth
 }
+
+// TODO - calculate this in a less hacky way
+func (m Model) EditorHeight() int {
+	return m.height - 1
+}

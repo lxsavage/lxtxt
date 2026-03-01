@@ -104,6 +104,10 @@ func (m Model) updateInsert(msg tea.KeyMsg) (Model, tea.Cmd) {
 		if m.editor.Backspace() {
 			m.setDirty(true)
 		}
+	case "delete":
+		if m.editor.Delete() {
+			m.setDirty(true)
+		}
 	case "enter":
 		if m.editor.Newline(utilities.IndentLevel(m.editor.Buf[m.editor.CursorR])) {
 			m.setDirty(true)

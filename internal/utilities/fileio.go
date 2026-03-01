@@ -1,5 +1,4 @@
-// fileio contains a few abstractions around loading/writing file data
-package fileio
+package utilities
 
 import (
 	"fmt"

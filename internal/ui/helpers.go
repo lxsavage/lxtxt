@@ -3,13 +3,13 @@ package ui
 import (
 	"fmt"
 	"lxsavage/lxtxt/internal/common"
-	"lxsavage/lxtxt/internal/fileio"
 	"lxsavage/lxtxt/internal/statusbar"
+	"lxsavage/lxtxt/internal/utilities"
 	"strconv"
 )
 
 func (m *Model) SaveFile() {
-	if newBuf, err := fileio.WriteFile(m.Path, m.editor.Buf); err == nil {
+	if newBuf, err := utilities.WriteFile(m.Path, m.editor.Buf); err == nil {
 		m.editor.Buf = newBuf
 		if m.editor.CursorR > len(m.editor.Buf) {
 			m.editor.CursorR = len(m.editor.Buf)

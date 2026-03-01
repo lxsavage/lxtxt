@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"lxsavage/lxtxt/internal/fileio"
 	"lxsavage/lxtxt/internal/ui"
+	"lxsavage/lxtxt/internal/utilities"
 	"os"
 )
 
@@ -37,7 +37,7 @@ func main() {
 
 	path := flag.Arg(0)
 	buf := []string{""}
-	if fbuf, err := fileio.LoadFileBuf(path); err == nil {
+	if fbuf, err := utilities.LoadFileBuf(path); err == nil {
 		buf = fbuf
 	}
 
