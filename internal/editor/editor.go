@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var tabSeq = strings.Repeat(" ", 4)
+
 type Model struct {
 	Buf         []string
 	CursorR     int
@@ -75,10 +77,14 @@ func (m Model) View() string {
 					newLine += line[:relativeCursorC]
 				}
 
+				highlighted := string(line[relativeCursorC])
+				if highlighted[0] == '\t' {
+					highlighted = tabSeq
+				}
 				if m.Mode == common.MODE_INSERT {
-					newLine += styleCursorInsert.Render(string(line[relativeCursorC]))
+					newLine += styleCursorInsert.Render(highlighted)
 				} else {
-					newLine += styleCursorNormal.Render(string(line[relativeCursorC]))
+					newLine += styleCursorNormal.Render(highlighted)
 				}
 
 				if relativeCursorC < len(line)-1 {
@@ -87,6 +93,7 @@ func (m Model) View() string {
 				line = newLine
 			}
 		}
+		line = strings.ReplaceAll(line, "\t", tabSeq)
 		fmt.Fprintf(&view, "%s%s\n", gutterStyle.Render(strconv.Itoa(lineNum+1)), line)
 	}
 

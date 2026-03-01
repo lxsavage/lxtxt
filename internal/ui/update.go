@@ -108,6 +108,10 @@ func (m Model) updateInsert(msg tea.KeyMsg) (Model, tea.Cmd) {
 		if m.editor.Delete() {
 			m.setDirty(true)
 		}
+	case "tab":
+		if m.editor.InsertText("\t") {
+			m.setDirty(true)
+		}
 	case "enter":
 		if m.editor.Newline(utilities.IndentLevel(m.editor.Buf[m.editor.CursorR])) {
 			m.setDirty(true)
