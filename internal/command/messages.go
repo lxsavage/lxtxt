@@ -6,8 +6,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
-type UpdateUIMsg common.StateUI
-
+type UpdateUIMsg common.EditorState
 type SaveMsg struct{}
 
 type PrintMsg struct {
@@ -22,12 +21,12 @@ func PrintCmdWithMessage(msg string) tea.Cmd {
 	}
 }
 
-func SaveCmd() tea.Msg {
-	return SaveMsg{}
+func UpdateUICmdWithState(s common.EditorState) tea.Cmd {
+	return func() tea.Msg {
+		return UpdateUIMsg(s)
+	}
 }
 
-func UpdateUICmdWithState(s common.StateUI) tea.Cmd {
-	return func() tea.Msg {
-		return s
-	}
+func SaveCmd() tea.Msg {
+	return SaveMsg{}
 }

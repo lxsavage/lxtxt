@@ -10,51 +10,50 @@ import (
 )
 
 func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
-
 	switch msg.String() {
 	case "k":
-		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorUp)
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorUp)
 	case "j":
-		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorDown)
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorDown)
 	case "h":
-		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorLeft)
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorLeft)
 	case "l":
-		m.editor.RepeatMotion(m.readNumBuf(), m.editor.CursorRight)
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorRight)
 	case "D":
 		// TODO - evaluate if this should be repeatable
-		if m.editor.RepeatMotion(m.readNumBuf(), m.editor.Deleteline) {
+		if m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.Deleteline) {
 			m.setDirty(true)
 		}
 	case "_":
-		m.editor.CursorLineStart()
+		m.Editor.CursorLineStart()
 	case "$":
-		m.editor.CursorLineEnd()
+		m.Editor.CursorLineEnd()
 	case "O":
-		m.editor.CursorLineStart()
-		m.editor.Newline(0)
-		m.editor.CursorUp()
+		m.Editor.CursorLineStart()
+		m.Editor.Newline(0)
+		m.Editor.CursorUp()
 		m.changeMode(common.MODE_INSERT)
 	case "o":
-		m.editor.CursorLineEnd()
-		m.editor.Newline(utilities.IndentLevel(m.editor.Buf[m.editor.CursorR]))
+		m.Editor.CursorLineEnd()
+		m.Editor.Newline(utilities.IndentLevel(m.Editor.Buf[m.Editor.CursorR]))
 		m.changeMode(common.MODE_INSERT)
 	case "a":
-		m.editor.CursorRight()
+		m.Editor.CursorRight()
 		m.changeMode(common.MODE_INSERT)
 	case "i":
 		m.changeMode(common.MODE_INSERT)
-	// case ":":
-	// m.changeMode(common.MODE_COMMAND)
+	case ":":
+		m.changeMode(common.MODE_COMMAND)
 	case "!":
 		if m.dirty {
-			m.editor.Buf = append([]string(nil), m.origBuf...)
-			m.editor.CursorR, m.editor.CursorC = 0, 0
+			m.Editor.Buf = append([]string(nil), m.origBuf...)
+			m.Editor.CursorR, m.Editor.CursorC = 0, 0
 
 			m.setDirty(false)
 		}
 	case "W":
 		if m.dirty {
-			m.SaveFile()
+			m.saveFile()
 		}
 	case "?":
 		// NOTE - if install script has not been run, this won't do anything due to
@@ -82,7 +81,7 @@ func (m Model) updateCommand(msg tea.KeyMsg) (Model, tea.Cmd) {
 			m.command = m.command[:len(m.command)-1]
 		}
 	case "enter":
-		state := m.editor.ToState()
+		state := m.Editor.ToState()
 		cmd, err := command.Eval(state, m.command)
 		if err != nil {
 			m.CommandMessage = fmt.Sprintf("command error: %v", err)
@@ -101,24 +100,24 @@ func (m Model) updateCommand(msg tea.KeyMsg) (Model, tea.Cmd) {
 func (m Model) updateInsert(msg tea.KeyMsg) (Model, tea.Cmd) {
 	switch msg.String() {
 	case "backspace":
-		if m.editor.Backspace() {
+		if m.Editor.Backspace() {
 			m.setDirty(true)
 		}
 	case "delete":
-		if m.editor.Delete() {
+		if m.Editor.Delete() {
 			m.setDirty(true)
 		}
 	case "tab":
-		if m.editor.InsertText("\t") {
+		if m.Editor.InsertText("\t") {
 			m.setDirty(true)
 		}
 	case "enter":
-		if m.editor.Newline(utilities.IndentLevel(m.editor.Buf[m.editor.CursorR])) {
+		if m.Editor.Newline(utilities.IndentLevel(m.Editor.Buf[m.Editor.CursorR])) {
 			m.setDirty(true)
 		}
 	default:
 		if t := msg.Key().Text; t != "" {
-			if m.editor.InsertText(t) {
+			if m.Editor.InsertText(t) {
 				m.setDirty(true)
 			}
 		}

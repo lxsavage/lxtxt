@@ -8,12 +8,12 @@ import (
 	"strconv"
 )
 
-func (m *Model) SaveFile() {
-	if newBuf, err := utilities.WriteFile(m.Path, m.editor.Buf); err == nil {
-		m.editor.Buf = newBuf
-		if m.editor.CursorR > len(m.editor.Buf) {
-			m.editor.CursorR = len(m.editor.Buf)
-			m.editor.CursorUp()
+func (m *Model) saveFile() {
+	if newBuf, err := utilities.WriteFile(m.Path, m.Editor.Buf); err == nil {
+		m.Editor.Buf = newBuf
+		if m.Editor.CursorR > len(m.Editor.Buf) {
+			m.Editor.CursorR = len(m.Editor.Buf)
+			m.Editor.CursorUp()
 		}
 
 		m.setDirty(false)
@@ -30,7 +30,7 @@ func (m Model) readNumBuf() int {
 }
 
 func (m *Model) computeFileStat() {
-	msg := fmt.Sprintf("%d:%d", m.editor.CursorR+1, m.editor.CursorC+1)
+	msg := fmt.Sprintf("%d:%d", m.Editor.CursorR+1, m.Editor.CursorC+1)
 
 	m.status.AddSegmentOptionsById(segmentNavStatId,
 		statusbar.WithText(msg),
@@ -49,7 +49,7 @@ func (m *Model) setDirty(d bool) {
 
 func (m *Model) changeMode(em common.EditorMode) {
 	m.Mode = em
-	m.editor.Mode = em
+	m.Editor.Mode = em
 	m.command = ""
 
 	switch em {

@@ -4,8 +4,12 @@ import (
 	"strings"
 )
 
+// A Motion is a function that might change the state of the editor, which
+// returns true if successful or false if not
 type Motion func() bool
 
+// RepeatMotion runs a motion up to a specified number of times, but will stop
+// early if the motion fails
 func (m *Model) RepeatMotion(repeat int, motion Motion) bool {
 	didAnything := false
 	for range repeat {
@@ -18,11 +22,10 @@ func (m *Model) RepeatMotion(repeat int, motion Motion) bool {
 }
 
 func (m *Model) correctVerticalScrolling() {
-	eh := m.EditorHeight()
 	if m.ScrollBaseR > m.CursorR {
 		m.ScrollBaseR = m.CursorR
-	} else if m.ScrollBaseR+eh < m.CursorR {
-		m.ScrollBaseR = m.CursorR - eh
+	} else if m.ScrollBaseR+m.height < m.CursorR {
+		m.ScrollBaseR = m.CursorR - m.height
 	}
 }
 

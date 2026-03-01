@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// tabSeq is what a tab is rendered as in the editor
 var tabSeq = strings.Repeat(" ", 4)
 
 type Model struct {

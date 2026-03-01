@@ -1,22 +1,14 @@
 package common
 
-type StateUI struct {
+type EditorState struct {
 	Buf         []string
 	CursorR     int
 	CursorC     int
-	RScrollBase int
-	Mode        EditorMode
-	width       int
-	height      int
-}
+	ScrollBaseR int
+	ScrollBaseC int
 
-func NewStateUI(width, height int) StateUI {
-	return StateUI{
-		width:  width,
-		height: height,
-	}
-}
+	// Not modifiable by command
 
-func (s StateUI) GetDimensions() (int, int) {
-	return s.width, s.height
+	Width  int
+	Height int
 }

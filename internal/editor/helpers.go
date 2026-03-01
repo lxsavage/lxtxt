@@ -5,28 +5,30 @@ import (
 	"lxsavage/lxtxt/internal/utilities"
 )
 
-// Unused for now until commands are fully implemented
-func (m Model) ToState() common.StateUI {
-	s := common.NewStateUI(m.width, m.height)
-	s.Buf = append([]string(nil), m.Buf...)
-	s.CursorR = m.CursorR
-	s.CursorC = m.CursorC
-	s.RScrollBase = m.ScrollBaseR
-	s.Mode = m.Mode
-	return s
+func (m Model) ToState() common.EditorState {
+	return common.EditorState{
+		Buf:         append([]string(nil), m.Buf...),
+		CursorR:     m.CursorR,
+		CursorC:     m.CursorC,
+		ScrollBaseR: m.ScrollBaseR,
+		ScrollBaseC: m.ScrollBaseC,
+		Width:       m.width,
+		Height:      m.height,
+	}
 }
 
-// TODO - implement
-func (m *Model) ApplyStateUI(s common.StateUI) {
+func (m *Model) ApplyStateUI(s common.EditorState) {
+	m.Buf = s.Buf
+	m.CursorR = s.CursorR
+	m.CursorC = s.CursorC
+	m.ScrollBaseR = s.ScrollBaseR
+	m.ScrollBaseC = s.ScrollBaseC
+
+	m.correctHorizontalScrolling()
+	m.correctVerticalScrolling()
 }
 
-// TODO - cache this
 func (m Model) EditorWidth() int {
 	gutterWidth := utilities.NumberWidth(len(m.Buf)) + 2
 	return m.width - gutterWidth
-}
-
-// TODO - calculate this in a less hacky way
-func (m Model) EditorHeight() int {
-	return m.height - 1
 }

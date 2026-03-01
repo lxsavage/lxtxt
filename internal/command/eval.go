@@ -27,9 +27,8 @@ func parse(cmd string) (string, []string, error) {
 
 	var args []string
 	if len(initialSplit) > 1 {
-		initialSplit = append(initialSplit, "")
 		argsCombined := initialSplit[1]
-		args := argRegexp.FindAllString(argsCombined, -1)
+		args = argRegexp.FindAllString(argsCombined, -1)
 		for i, v := range args {
 			args[i] = strings.Trim(v, "'\"")
 		}
@@ -38,7 +37,7 @@ func parse(cmd string) (string, []string, error) {
 	return action, args, nil
 }
 
-func Eval(state common.StateUI, cmd string) (tea.Cmd, error) {
+func Eval(state common.EditorState, cmd string) (tea.Cmd, error) {
 	cmd, args, err := parse(cmd)
 	if err != nil {
 		return nil, err
@@ -46,7 +45,7 @@ func Eval(state common.StateUI, cmd string) (tea.Cmd, error) {
 
 	exec, ok := commandMap[strings.ToLower(cmd)]
 	if !ok {
-		return nil, ErrInvalidCommand
+		return commandMap["_"](state, args)
 	}
 
 	teaCmd, err := exec(state, args)

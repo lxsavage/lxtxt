@@ -51,7 +51,7 @@ type Model struct {
 	command        string
 	CommandMessage string
 	numBuf         []byte
-	editor         *editor.Model
+	Editor         *editor.Model
 	dirty          bool
 }
 
@@ -60,7 +60,7 @@ func newModel(path string, buf []string) Model {
 		Mode:    common.MODE_NORMAL,
 		Path:    path,
 		origBuf: append([]string(nil), buf...),
-		editor:  editor.New(append([]string(nil), buf...)),
+		Editor:  editor.New(append([]string(nil), buf...)),
 	}
 
 	s := statusbar.StatusBar(
@@ -96,23 +96,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.status.SetWidth(m.width)
 
 		// TODO - find a non-hacky way of setting up the editor height
-		m.editor.SetDimensions(msg.Width, msg.Height-1)
+		m.Editor.SetDimensions(msg.Width, msg.Height-1)
 	case tea.KeyMsg:
+		if msg.String() == "esc" {
+			m.changeMode(common.MODE_NORMAL)
+		}
+
 		if m.Mode == common.MODE_NORMAL || m.Mode == common.MODE_INSERT {
 			switch msg.String() {
 			case "up":
-				m.editor.CursorUp()
+				m.Editor.CursorUp()
 			case "down":
-				m.editor.CursorDown()
+				m.Editor.CursorDown()
 			case "left":
-				m.editor.CursorLeft()
+				m.Editor.CursorLeft()
 			case "right":
-				m.editor.CursorRight()
+				m.Editor.CursorRight()
 			}
-		}
-		switch msg.String() {
-		case "esc":
-			m.changeMode(common.MODE_NORMAL)
 		}
 
 		switch m.Mode {
@@ -127,6 +127,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case command.PrintMsg:
 		m.CommandMessage = msg.Value
+	case command.SaveMsg:
+		m.saveFile()
+	case command.UpdateUIMsg:
+		m.Editor.ApplyStateUI(common.EditorState(msg))
+		m.setDirty(true)
 	}
 
 	m.computeFileStat()
@@ -137,14 +142,16 @@ func (m Model) View() tea.View {
 	var v strings.Builder
 
 	v.WriteString(m.status.View())
-	v.WriteString(m.editor.View())
+	v.WriteString(m.Editor.View())
 
 	if m.Mode == common.MODE_COMMAND {
 		fmt.Fprintf(&v, ":%s%s\n", m.command, styleCursorCommand.Render(" "))
-	} else {
+	} else if len(m.numBuf) > 0 {
 		for _, b := range m.numBuf {
 			v.WriteByte(b)
 		}
+	} else {
+		v.WriteString(m.CommandMessage)
 	}
 
 	return tea.View{

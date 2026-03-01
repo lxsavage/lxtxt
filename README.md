@@ -52,6 +52,7 @@ In addition to these commands, the following commands can be typed to switch
 into other modes:
 
 - `i`: enter `INSERT` mode
+- `:`: enter `COMMAND` mode
 
 > [!NOTE]
 > You can return to `NORMAL` mode from any other mode by pressing `esc`.
@@ -61,3 +62,13 @@ into other modes:
 `INSERT` is primarily for directly modifying text. Typing text in this mode will
 insert it where the cursor currently sits, and arrow keys can still be used to
 move around here similar to `NORMAL` mode.
+
+#### `COMMAND`
+
+`COMMAND` is for typing in commands to execute. The following are available
+commands by default:
+
+- `w`: save the buffer to the file
+- `q` or `q!`: quit the editor without saving
+- `wq`: save the buffer to the file and quit the editor
+- `sed <regexp> <replaceTxt>`: find and replace using a regular expression

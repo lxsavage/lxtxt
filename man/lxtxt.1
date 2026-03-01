@@ -61,8 +61,30 @@ In most actions you can type a number before the action to repeat that command m
 
 .TP
 \fBINSERT\fR
+
 Primarily used for inserting and editing text directly. Typing printable characters inserts them at the cursor location.
 Arrow keys are available to move while inserting.
+
+.TP
+\fBCOMMAND\fR
+
+Used for executing commands. The following commands are available by default:
+
+.TP
+\fBw\fR
+Write the buffer to the file (save).
+
+.TP
+\fBq\fR or \fBq!\fR
+Quit the editor.
+
+.TP
+\fBwq\fR
+Write the buffer to the file then quit.
+
+.TP
+\fBsed\fR <regexp> <replaceTxt>
+Find and replace in the current buffer using a regular expression.
 
 .SH USAGE NOTES
 .IP
