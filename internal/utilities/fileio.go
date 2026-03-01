@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-// TODO - implement proper error handling
-
 func CreateOK(path string) bool {
 	dir := filepath.Dir(path)
 	if info, err := os.Stat(dir); err != nil {
