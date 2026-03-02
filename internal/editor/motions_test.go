@@ -2,13 +2,6 @@ package editor
 
 import "testing"
 
-func hasValidVerticalScrollPosition(m Model) bool {
-	return m.CursorR >= m.ScrollBaseR && m.CursorR < m.ScrollBaseR+m.height
-}
-func hasValidHorizontalScrollPosition(m Model) bool {
-	return m.CursorC >= m.ScrollBaseC && m.CursorC < m.ScrollBaseC+m.width
-}
-
 func TestRepeatMotionNegativeTimes(t *testing.T) {
 	m := &Model{}
 
