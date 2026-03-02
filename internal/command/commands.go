@@ -13,6 +13,7 @@ import (
 
 type command func(state common.EditorState, args []string) (tea.Cmd, error)
 
+// TODO - convert this into a struct of some sort to make testing possible
 var commandMap = map[string]command{
 	"w":      saveBuf,
 	"q":      quit,
