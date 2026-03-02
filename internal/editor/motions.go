@@ -8,9 +8,30 @@ import (
 // returns true if successful or false if not
 type Motion func() bool
 
+func (m *Model) adjustVerticalScrolling() {
+	if m.ScrollBaseR > m.CursorR {
+		m.ScrollBaseR = m.CursorR
+	} else if m.ScrollBaseR+m.height-1 <= m.CursorR {
+		m.ScrollBaseR = m.CursorR - m.height + 1
+	}
+}
+
+func (m *Model) adjustHorizontalScrolling() {
+	ew := m.EditorWidth()
+	if m.ScrollBaseC > m.CursorC {
+		m.ScrollBaseC = m.CursorC
+	} else if m.ScrollBaseC+ew-1 < m.CursorC {
+		m.ScrollBaseC = m.CursorC - ew + 1
+	}
+}
+
 // RepeatMotion runs a motion up to a specified number of times, but will stop
 // early if the motion fails
 func (m *Model) RepeatMotion(repeat int, motion Motion) bool {
+	if repeat <= 0 {
+		return false
+	}
+
 	didAnything := false
 	for range repeat {
 		if !motion() {
@@ -19,23 +40,6 @@ func (m *Model) RepeatMotion(repeat int, motion Motion) bool {
 		didAnything = true
 	}
 	return didAnything
-}
-
-func (m *Model) correctVerticalScrolling() {
-	if m.ScrollBaseR > m.CursorR {
-		m.ScrollBaseR = m.CursorR
-	} else if m.ScrollBaseR+m.height < m.CursorR {
-		m.ScrollBaseR = m.CursorR - m.height
-	}
-}
-
-func (m *Model) correctHorizontalScrolling() {
-	ew := m.EditorWidth()
-	if m.ScrollBaseC > m.CursorC {
-		m.ScrollBaseC = m.CursorC
-	} else if m.ScrollBaseC+ew-1 < m.CursorC {
-		m.ScrollBaseC = m.CursorC - ew + 1
-	}
 }
 
 func (m *Model) CursorUp() bool {
@@ -48,8 +52,8 @@ func (m *Model) CursorUp() bool {
 		m.CursorC = len(m.Buf[m.CursorR])
 	}
 
-	m.correctVerticalScrolling()
-	m.correctHorizontalScrolling()
+	m.adjustVerticalScrolling()
+	m.adjustHorizontalScrolling()
 	return true
 }
 
@@ -63,8 +67,8 @@ func (m *Model) CursorDown() bool {
 		m.CursorC = len(m.Buf[m.CursorR])
 	}
 
-	m.correctVerticalScrolling()
-	m.correctHorizontalScrolling()
+	m.adjustVerticalScrolling()
+	m.adjustHorizontalScrolling()
 	return true
 }
 
@@ -74,7 +78,7 @@ func (m *Model) CursorLeft() bool {
 	}
 	m.CursorC--
 
-	m.correctHorizontalScrolling()
+	m.adjustHorizontalScrolling()
 	return true
 }
 
@@ -84,20 +88,30 @@ func (m *Model) CursorRight() bool {
 	}
 	m.CursorC++
 
-	m.correctHorizontalScrolling()
+	m.adjustHorizontalScrolling()
 	return true
 }
 
 func (m *Model) CursorLineStart() bool {
+	// ScrollBase does not need to be checked because it will always be 0 if CursorC is
+	if m.CursorC == 0 {
+		return false
+	}
+
 	m.CursorC = 0
 	m.ScrollBaseC = 0
 	return true
 }
 
 func (m *Model) CursorLineEnd() bool {
-	m.CursorC = len(m.Buf[m.CursorR])
+	target := len(m.Buf[m.CursorR])
+	if m.CursorC == target {
+		return false
+	}
 
-	m.correctHorizontalScrolling()
+	m.CursorC = target
+
+	m.adjustHorizontalScrolling()
 	return true
 }
 
@@ -114,7 +128,7 @@ func (m *Model) Backspace() bool {
 		m.Buf[m.CursorR] = newLine
 		m.CursorC--
 
-		m.correctHorizontalScrolling()
+		m.adjustHorizontalScrolling()
 		return true
 	} else if m.CursorR > 0 {
 		oldLine := m.Buf[m.CursorR]
@@ -151,6 +165,11 @@ func (m *Model) Delete() bool {
 			newLine += oldLine[m.CursorC+1:]
 		}
 
+		// TODO - clean this logic up
+		if oldLine == newLine {
+			return false
+		}
+
 		m.Buf[m.CursorR] = newLine
 	}
 
@@ -159,6 +178,10 @@ func (m *Model) Delete() bool {
 
 func (m *Model) Deleteline() bool {
 	if len(m.Buf) <= 1 {
+		if m.Buf[0] == "" {
+			return false
+		}
+
 		m.Buf = []string{""}
 		return true
 	}
@@ -212,6 +235,8 @@ func (m *Model) Newline(indent int) bool {
 	}
 	m.Buf = newBuf
 	m.CursorC = indent
+
+	m.adjustVerticalScrolling()
 	return true
 }
 
@@ -225,7 +250,7 @@ func (m *Model) InsertText(t string) bool {
 			newLine += oldLine[:m.CursorC]
 		}
 		newLine += t
-		if m.CursorC < len(oldLine)-1 {
+		if m.CursorC < len(oldLine) {
 			newLine += oldLine[m.CursorC:]
 		}
 

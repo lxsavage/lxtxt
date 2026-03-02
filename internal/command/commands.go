@@ -16,8 +16,8 @@ type command func(state common.EditorState, args []string) (tea.Cmd, error)
 var commandMap = map[string]command{
 	"w":      saveBuf,
 	"q":      quit,
-	"q!":     quit, // Kept due to being a Vim artifact
-	"wq":     saveBufAndQuit,
+	"q!":     quit,           // Kept due to being a Vim artifact
+	"wq":     saveBufAndQuit, // Kept due to being a Vim artifact
 	"saveas": saveAs,
 	"sed":    sub,
 	"_":      invalidCommand,
@@ -33,7 +33,7 @@ func Register(name string, action command) bool {
 	return true
 }
 
-func saveBuf(state common.EditorState, args []string) (tea.Cmd, error) {
+func saveBuf(_ common.EditorState, _ []string) (tea.Cmd, error) {
 	return SaveCmd, nil
 }
 
@@ -49,7 +49,7 @@ func saveAs(state common.EditorState, args []string) (tea.Cmd, error) {
 			return nil, err
 		}
 
-		expandedPath = strings.ReplaceAll(expandedPath, "~/", home+"/")
+		expandedPath = strings.Replace(expandedPath, "~/", home+"/", 1)
 	}
 
 	if !utilities.CreateOK(expandedPath) {
@@ -70,7 +70,7 @@ func sub(state common.EditorState, args []string) (tea.Cmd, error) {
 
 	re, err := regexp.Compile(args[0])
 	if err != nil {
-		return nil, errors.New("Invalid search expression")
+		return nil, errors.New("invalid search expression")
 	}
 
 	for i, line := range state.Buf {
@@ -80,14 +80,14 @@ func sub(state common.EditorState, args []string) (tea.Cmd, error) {
 	return UpdateUICmdWithState(state), nil
 }
 
-func quit(state common.EditorState, args []string) (tea.Cmd, error) {
+func quit(_ common.EditorState, _ []string) (tea.Cmd, error) {
 	return tea.Quit, nil
 }
 
-func saveBufAndQuit(state common.EditorState, args []string) (tea.Cmd, error) {
+func saveBufAndQuit(_ common.EditorState, _ []string) (tea.Cmd, error) {
 	return tea.Batch(SaveCmd, tea.Quit), nil
 }
 
-func invalidCommand(state common.EditorState, args []string) (tea.Cmd, error) {
-	return nil, errors.New("Invalid command")
+func invalidCommand(_ common.EditorState, _ []string) (tea.Cmd, error) {
+	return nil, errors.New("unknown command")
 }

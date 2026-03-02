@@ -24,11 +24,11 @@ func (m *Model) ApplyStateUI(s common.EditorState) {
 	m.ScrollBaseR = s.ScrollBaseR
 	m.ScrollBaseC = s.ScrollBaseC
 
-	m.correctHorizontalScrolling()
-	m.correctVerticalScrolling()
+	m.adjustHorizontalScrolling()
+	m.adjustVerticalScrolling()
 }
 
 func (m Model) EditorWidth() int {
 	gutterWidth := utilities.NumberWidth(len(m.Buf)) + 2
-	return m.width - gutterWidth
+	return max(0, m.width-gutterWidth)
 }

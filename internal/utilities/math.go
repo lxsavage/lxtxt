@@ -3,7 +3,7 @@ package utilities
 // NumberWidth determines how many digits wide n is
 func NumberWidth(n int) int {
 	w := 1
-	for n > 0 {
+	for n >= 10 {
 		n /= 10
 		w++
 	}
