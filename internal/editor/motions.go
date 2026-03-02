@@ -151,12 +151,7 @@ func (m *Model) Delete() bool {
 		}
 
 		nextLine := m.Buf[m.CursorR+1]
-
 		newBuf := append(m.Buf[:m.CursorR], m.Buf[m.CursorR]+nextLine)
-		if len(m.Buf) > m.CursorR+2 {
-			newBuf = append(newBuf, m.Buf[m.CursorR+2:]...)
-		}
-
 		m.Buf = newBuf
 	} else {
 		oldLine := m.Buf[m.CursorR]
@@ -165,18 +160,13 @@ func (m *Model) Delete() bool {
 			newLine += oldLine[m.CursorC+1:]
 		}
 
-		// TODO - clean this logic up
-		if oldLine == newLine {
-			return false
-		}
-
 		m.Buf[m.CursorR] = newLine
 	}
 
 	return true
 }
 
-func (m *Model) Deleteline() bool {
+func (m *Model) DeleteLine() bool {
 	if len(m.Buf) <= 1 {
 		if m.Buf[0] == "" {
 			return false
@@ -189,11 +179,8 @@ func (m *Model) Deleteline() bool {
 	if m.CursorR == 0 {
 		m.Buf = m.Buf[1:]
 	} else {
-
 		if m.CursorR < len(m.Buf) {
 			m.Buf = append(m.Buf[:m.CursorR], m.Buf[m.CursorR+1:]...)
-		} else {
-			m.Buf = append([]string(nil), m.Buf[:m.CursorR]...)
 		}
 
 		if m.CursorR >= len(m.Buf) {
@@ -205,7 +192,7 @@ func (m *Model) Deleteline() bool {
 	return true
 }
 
-func (m *Model) Newline(indent int) bool {
+func (m *Model) NewLine(indent int) bool {
 	oldLine := ""
 	newLine := ""
 	if indent > 0 {

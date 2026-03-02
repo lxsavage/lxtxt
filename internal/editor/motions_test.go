@@ -462,7 +462,7 @@ func TestDeleteLineFirstValid(t *testing.T) {
 		CursorR: 0,
 	}
 
-	if ok := m.Deleteline(); !ok {
+	if ok := m.DeleteLine(); !ok {
 		t.Fatalf("DeleteLine(Model): expected return true, got false")
 	}
 
@@ -481,7 +481,7 @@ func TestDeleteLineLastValid(t *testing.T) {
 		CursorR: 1,
 	}
 
-	if ok := m.Deleteline(); !ok {
+	if ok := m.DeleteLine(); !ok {
 		t.Fatalf("DeleteLine(Model): expected return true, got false")
 	}
 
@@ -505,7 +505,7 @@ func TestDeleteLineWithScroll(t *testing.T) {
 		ScrollBaseR: 2,
 	}
 
-	if ok := m.Deleteline(); !ok {
+	if ok := m.DeleteLine(); !ok {
 		t.Fatalf("DeleteLine(Model): expected return true, got false")
 	}
 
@@ -518,13 +518,51 @@ func TestDeleteLineWithScroll(t *testing.T) {
 	}
 }
 
+func TestDeleteOnlyLine(t *testing.T) {
+	m := &Model{
+		Buf:     []string{"a"},
+		CursorR: 0,
+	}
+
+	if ok := m.DeleteLine(); !ok {
+		t.Fatalf("DeleteLine(Model): expected return true, got false")
+	}
+
+	if len(m.Buf) != 1 {
+		t.Fatalf("DeleteLine(Model): expected len(m.Buf) = 1, got \"%d\"", len(m.Buf))
+	}
+
+	if m.Buf[0] != "" {
+		t.Fatalf("DeleteLine(Model): expected m.Buf[0] = \"\", got \"%s\"", m.Buf[0])
+	}
+}
+
+func TestDeleteLineMiddle(t *testing.T) {
+	m := &Model{
+		Buf:     []string{"a", "b", "c"},
+		CursorR: 1,
+	}
+
+	if ok := m.DeleteLine(); !ok {
+		t.Fatalf("DeleteLine(Model): expected return true, got false")
+	}
+
+	if len(m.Buf) != 2 {
+		t.Fatalf("DeleteLine(Model): expected len(m.Buf) = 2, got \"%d\"", len(m.Buf))
+	}
+
+	if m.Buf[0] != "a" || m.Buf[1] != "c" {
+		t.Fatalf("DeleteLine(Model): expected m.Buf = {\"a\",\"c\"}, got \"%s\"", m.Buf[0])
+	}
+}
+
 func TestDeleteLineInvalid(t *testing.T) {
 	m := &Model{
 		Buf:     []string{""},
 		CursorR: 0,
 	}
 
-	if ok := m.Deleteline(); ok {
+	if ok := m.DeleteLine(); ok {
 		t.Fatalf("DeleteLine(Model): expected return false, got true")
 	}
 
@@ -543,7 +581,7 @@ func TestNewLineBaseNoIndent(t *testing.T) {
 		CursorR: 0,
 	}
 
-	if ok := m.Newline(0); !ok {
+	if ok := m.NewLine(0); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -562,7 +600,7 @@ func TestNewLineBaseWithIndent(t *testing.T) {
 		CursorR: 0,
 	}
 
-	if ok := m.Newline(1); !ok {
+	if ok := m.NewLine(1); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -582,7 +620,7 @@ func TestNewLineMiddleNoIndent(t *testing.T) {
 		CursorC: 2,
 	}
 
-	if ok := m.Newline(0); !ok {
+	if ok := m.NewLine(0); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -602,7 +640,7 @@ func TestNewLineMiddleWithIndent(t *testing.T) {
 		CursorC: 2,
 	}
 
-	if ok := m.Newline(1); !ok {
+	if ok := m.NewLine(1); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -621,7 +659,7 @@ func TestNewLineEndNoIndent(t *testing.T) {
 		CursorC: 4,
 	}
 
-	if ok := m.Newline(0); !ok {
+	if ok := m.NewLine(0); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -641,7 +679,7 @@ func TestNewLineEndWithIndent(t *testing.T) {
 		CursorC: 4,
 	}
 
-	if ok := m.Newline(1); !ok {
+	if ok := m.NewLine(1); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -654,6 +692,46 @@ func TestNewLineEndWithIndent(t *testing.T) {
 	}
 }
 
+func TestNewLineMiddleUpperSide(t *testing.T) {
+	m := &Model{
+		Buf:     []string{"asdf", "fdsa"},
+		CursorC: 4,
+		CursorR: 0,
+	}
+
+	if ok := m.NewLine(0); !ok {
+		t.Fatalf("NewLine(Model): expected return true, got false")
+	}
+
+	if len(m.Buf) != 3 {
+		t.Fatalf("NewLine(Model): expected len(m.Buf) = 3, got \"%v\"", len(m.Buf))
+	}
+
+	if m.Buf[0] != "asdf" || m.Buf[1] != "" || m.Buf[2] != "fdsa" {
+		t.Fatalf("NewLine(Model): expected m.Buf = {\"asdf\",\"\",\"fdsa\"}, got %v", m.Buf)
+	}
+}
+
+func TestNewLineMiddleLowerSide(t *testing.T) {
+	m := &Model{
+		Buf:     []string{"asdf", "fdsa"},
+		CursorC: 0,
+		CursorR: 1,
+	}
+
+	if ok := m.NewLine(0); !ok {
+		t.Fatalf("NewLine(Model): expected return true, got false")
+	}
+
+	if len(m.Buf) != 3 {
+		t.Fatalf("NewLine(Model): expected len(m.Buf) = 3, got \"%v\"", len(m.Buf))
+	}
+
+	if m.Buf[0] != "asdf" || m.Buf[1] != "" || m.Buf[2] != "fdsa" {
+		t.Fatalf("NewLine(Model): expected m.Buf = {\"asdf\",\"\",\"fdsa\"}, got %v", m.Buf)
+	}
+}
+
 func TestNewLineWithScroll(t *testing.T) {
 	m := &Model{
 		Buf:         []string{"asdf", "fdsa"},
@@ -663,7 +741,7 @@ func TestNewLineWithScroll(t *testing.T) {
 		height:      1,
 	}
 
-	if ok := m.Newline(0); !ok {
+	if ok := m.NewLine(0); !ok {
 		t.Fatalf("NewLine(Model): expected return true, got false")
 	}
 
@@ -676,7 +754,22 @@ func TestNewLineWithScroll(t *testing.T) {
 	}
 }
 
-// InsertText
+func TestInsertTextEmptyLine(t *testing.T) {
+	m := &Model{
+		Buf:     []string{""},
+		CursorR: 0,
+		CursorC: 0,
+	}
+
+	if ok := m.InsertText("a"); !ok {
+		t.Fatalf("InsertText(Model): expected return true, got false")
+	}
+
+	if m.Buf[0] != "a" {
+		t.Fatalf("InsertText(Model): expected m.Buf[0] = \"a\", got \"%s\"", m.Buf[0])
+	}
+}
+
 func TestInsertTextBase(t *testing.T) {
 	m := &Model{
 		Buf:     []string{"sdf"},

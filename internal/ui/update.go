@@ -21,7 +21,7 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorRight)
 	case "D":
 		// TODO - evaluate if this should be repeatable
-		if m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.Deleteline) {
+		if m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.DeleteLine) {
 			m.setDirty(true)
 		}
 	case "_":
@@ -30,12 +30,12 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 		m.Editor.CursorLineEnd()
 	case "O":
 		m.Editor.CursorLineStart()
-		m.Editor.Newline(0)
+		m.Editor.NewLine(0)
 		m.Editor.CursorUp()
 		m.changeMode(common.MODE_INSERT)
 	case "o":
 		m.Editor.CursorLineEnd()
-		m.Editor.Newline(utilities.IndentLevel(m.Editor.Buf[m.Editor.CursorR]))
+		m.Editor.NewLine(utilities.IndentLevel(m.Editor.Buf[m.Editor.CursorR]))
 		m.changeMode(common.MODE_INSERT)
 	case "a":
 		m.Editor.CursorRight()
@@ -114,7 +114,7 @@ func (m Model) updateInsert(msg tea.KeyMsg) (Model, tea.Cmd) {
 			m.setDirty(true)
 		}
 	case "enter":
-		if m.Editor.Newline(utilities.IndentLevel(m.Editor.Buf[m.Editor.CursorR])) {
+		if m.Editor.NewLine(utilities.IndentLevel(m.Editor.Buf[m.Editor.CursorR])) {
 			m.setDirty(true)
 		}
 	default:
