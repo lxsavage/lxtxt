@@ -32,6 +32,10 @@ var (
 		statusbar.WithId(segmentModeId),
 		statusbar.WithStyle(styleSegmentCommandMode),
 	)
+	SegmentVisual = statusbar.Segment(common.MODE_VISUAL.String(),
+		statusbar.WithId(segmentModeId),
+		statusbar.WithStyle(styleSegmentVisualMode),
+	)
 	SegmentIsNotDirty = statusbar.Segment("",
 		statusbar.WithId(segmentDirtyId),
 		statusbar.WithStyle(statusbar.StyleDefaultStatusBar),
@@ -54,14 +58,16 @@ type Model struct {
 	width          int
 	height         int
 	dirty          bool
+	experiments    bool
 }
 
-func newModel(path string, buf []string) Model {
+func newModel(path string, buf []string, experiments bool) Model {
 	m := Model{
-		mode:    common.MODE_NORMAL,
-		path:    path,
-		origBuf: append([]string(nil), buf...),
-		Editor:  editor.New(append([]string(nil), buf...)),
+		mode:        common.MODE_NORMAL,
+		path:        path,
+		origBuf:     append([]string(nil), buf...),
+		Editor:      editor.New(append([]string(nil), buf...)),
+		experiments: experiments,
 	}
 
 	s := statusbar.StatusBar(
@@ -104,7 +110,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.changeMode(common.MODE_NORMAL)
 		}
 
-		if m.mode == common.MODE_NORMAL || m.mode == common.MODE_INSERT {
+		if m.mode == common.MODE_NORMAL || m.mode == common.MODE_INSERT || m.mode == common.MODE_VISUAL {
 			switch msg.String() {
 			case "up":
 				m.Editor.CursorUp()
@@ -122,6 +128,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateCommand(msg)
 		case common.MODE_INSERT:
 			return m.updateInsert(msg)
+		case common.MODE_VISUAL:
+			fallthrough
 		case common.MODE_NORMAL:
 			fallthrough
 		default:
@@ -157,6 +165,11 @@ func (m Model) View() tea.View {
 		for _, b := range m.numBuf {
 			v.WriteByte(b)
 		}
+	} else if m.mode == common.MODE_VISUAL {
+		fmt.Fprintf(&v, "%d,%d <- %d,%d",
+			m.Editor.AnchorVisualR, m.Editor.AnchorVisualC,
+			m.Editor.CursorR, m.Editor.CursorC,
+		)
 	} else {
 		v.WriteString(m.commandMessage)
 	}

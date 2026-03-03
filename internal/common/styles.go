@@ -9,5 +9,6 @@ var (
 	Black    = lipgloss.Black
 	White    = lipgloss.Color("#ffffff")
 	Gray     = lipgloss.Color("#a89984") // Gruvbox dark fg4
+	Orange   = lipgloss.Color("#d65d0e") // Gruvbox dark orange (166)
 	Disabled = lipgloss.Color("#665c54") // Gruvbox dark bg3
 )

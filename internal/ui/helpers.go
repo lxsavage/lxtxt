@@ -66,5 +66,7 @@ func (m *Model) changeMode(em common.EditorMode) {
 		m.status.SetSegmentById(segmentModeId, SegmentCommand)
 	case common.MODE_INSERT:
 		m.status.SetSegmentById(segmentModeId, SegmentInsert)
+	case common.MODE_VISUAL:
+		m.status.SetSegmentById(segmentModeId, SegmentVisual)
 	}
 }

@@ -7,11 +7,19 @@ import (
 	"lxsavage/lxtxt/internal/ui"
 	"lxsavage/lxtxt/internal/utilities"
 	"os"
+	"time"
 )
 
 const Version = "localbuild"
 
+func showExperimentsWarning(done chan<- any) {
+	fmt.Println("WARNING: Experiments are enabled; unexpected or broken behavior may occur.")
+	time.Sleep(time.Second * 2)
+	done <- struct{}{}
+}
+
 func main() {
+	experiments := flag.Bool("experiments", false, "enable incomplete/experimental features")
 	showVersion := flag.Bool("version", false, "gets the version of LXTXT")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "LXTXT Editor %s\n\n", Version)
@@ -32,6 +40,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	msgDoneCh := make(chan any, 1)
+	if *experiments {
+		go showExperimentsWarning(msgDoneCh)
+	}
+
 	path := ""
 	buf := []string{""}
 	if len(flag.Args()) > 0 {
@@ -41,7 +54,11 @@ func main() {
 		}
 	}
 
-	if err := ui.Exec(path, buf); err != nil {
+	if *experiments {
+		<-msgDoneCh
+	}
+
+	if err := ui.Exec(path, buf, *experiments); err != nil {
 		log.Fatalf("LXTXT runtime exception: %v", err)
 	}
 }

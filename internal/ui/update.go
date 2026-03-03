@@ -44,6 +44,17 @@ func (m Model) updateNormal(msg tea.KeyMsg) (Model, tea.Cmd) {
 		m.changeMode(common.MODE_INSERT)
 	case ":":
 		m.changeMode(common.MODE_COMMAND)
+	case "v":
+		if m.experiments {
+			rowLen := len(m.Editor.Buf[m.Editor.CursorR])
+			if m.Editor.CursorC >= rowLen && rowLen > 0 {
+				m.Editor.CursorC--
+			}
+			m.Editor.AnchorVisualR = m.Editor.CursorR
+			m.Editor.AnchorVisualC = m.Editor.CursorC
+
+			m.changeMode(common.MODE_VISUAL)
+		}
 	case "!":
 		if m.dirty {
 			m.Editor.Buf = append([]string(nil), m.origBuf...)
@@ -124,5 +135,32 @@ func (m Model) updateInsert(msg tea.KeyMsg) (Model, tea.Cmd) {
 			}
 		}
 	}
+	return m, nil
+}
+
+func (m Model) updateVisual(msg tea.KeyMsg) (Model, tea.Cmd) {
+	switch msg.String() {
+	case "k":
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorUp)
+	case "j":
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorDown)
+	case "h":
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorLeft)
+	case "l":
+		m.Editor.RepeatMotion(m.readNumBuf(), m.Editor.CursorRight)
+	case "_":
+		m.Editor.CursorLineStart()
+	case "$":
+		m.Editor.CursorLineEnd()
+	}
+
+	keyCodeByte := msg.String()[0]
+	if keyCodeByte >= '0' && keyCodeByte <= '9' {
+		m.numBuf = append(m.numBuf, keyCodeByte)
+	} else {
+		m.numBuf = m.numBuf[:0]
+	}
+
+	m.computeFileStat()
 	return m, nil
 }

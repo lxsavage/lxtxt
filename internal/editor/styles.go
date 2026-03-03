@@ -13,6 +13,9 @@ var (
 	styleCursorInsert = lipgloss.NewStyle().
 				Background(common.Green)
 
+	styleCursorVisual = lipgloss.NewStyle().
+				Background(common.Orange)
+
 	styleLineNumber = lipgloss.NewStyle().
 			Foreground(common.Gray).
 			Padding(0, 1).
@@ -20,4 +23,7 @@ var (
 
 	styleEmptyLine = lipgloss.NewStyle().
 			Foreground(common.Disabled)
+
+	styleHighlight = lipgloss.NewStyle().
+			Background(common.Blue)
 )

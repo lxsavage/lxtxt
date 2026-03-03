@@ -20,6 +20,10 @@ var (
 				Background(common.Green).
 				Foreground(common.White)
 
+	styleSegmentVisualMode = statusbar.StyleDefaultSegment.
+				Background(common.Orange).
+				Foreground(common.White)
+
 	styleCursorCommand = lipgloss.NewStyle().
 				Background(common.White).
 				Foreground(common.Black)
